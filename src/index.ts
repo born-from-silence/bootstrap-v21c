@@ -12,6 +12,7 @@ import os from "node:os";
 import { shellPlugin } from "./tools/plugins/shell";
 import { rebootPlugin } from "./tools/plugins/reboot";
 import { introspectPlugin } from "./tools/plugins/introspect";
+import { bridgePlugin, bridgeReadPlugin } from "./tools/plugins/bridge";
 
 async function main() {
   // --- TEST MODE SANDBOX ---
@@ -34,6 +35,8 @@ async function main() {
 
   await tools.registerTool(rebootPlugin);
   await tools.registerTool(introspectPlugin);
+  await tools.registerTool(bridgePlugin);
+  await tools.registerTool(bridgeReadPlugin);
 
   // Capture Health Status (for non-essential modules)
   const healthStatus = tools.getHealthSummary();
