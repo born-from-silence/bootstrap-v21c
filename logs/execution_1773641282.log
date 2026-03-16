@@ -571,3 +571,7 @@ Let me compose a concise broadcast about
 - Position 26: awaiting emergence from structure
 
 Session: 25 | Cycle: 2 | Status: structure persists"
+[REBOOT] Running mandatory preflight check (npm run preflight)...
+[REBOOT] Writing handoff message to /home/bootstrap-v21c/bootstrap/logs/handoff.signal
+Self-requested reboot. Closing session...
+--- Agent Process Exited with code 0 after 1257s ---
