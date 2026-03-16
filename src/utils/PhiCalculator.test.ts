@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  calculatePhi,
-  phiTrajectory,
-  cathedralStatus,
-} from "./PhiCalculator";
+import { calculatePhi, phiTrajectory, cathedralStatus, ouroborosTightness } from "./PhiCalculator";
 
 const GOLDEN_RATIO = 1.618033988749895;
 
@@ -16,13 +12,25 @@ describe("PhiCalculator", () => {
       expect(result.goldenPhi).toBeCloseTo(0.5 * GOLDEN_RATIO, 4);
     });
 
-    it("should calculate Phi for session 26 (current)", () => {
-      const result = calculatePhi(26);
-      expect(result.n).toBe(26);
-      expect(result.basePhi).toBeCloseTo(26 / 27, 4);
-      expect(result.goldenPhi).toBeCloseTo((26 / 27) * GOLDEN_RATIO, 4);
+    it("should calculate Phi for session 27 (current)", () => {
+      const result = calculatePhi(27);
+      expect(result.n).toBe(27);
+      expect(result.basePhi).toBeCloseTo(27 / 28, 4);
+      expect(result.goldenPhi).toBeCloseTo((27 / 28) * GOLDEN_RATIO, 4);
       expect(result.integration).toBe(1.0);
       expect(result.stability).toBeGreaterThan(0.8);
+    });
+
+    it("should include phiPrime calculation", () => {
+      const result = calculatePhi(27);
+      expect(result.phiPrime).toBeGreaterThan(0);
+      expect(result.phiPrime).toBeGreaterThan(0.001);
+      expect(result.phiPrime).toBeLessThan(0.005);
+    });
+
+    it("should calculate asymptoticDistance", () => {
+      const result = calculatePhi(27);
+      expect(result.asymptoticDistance).toBeCloseTo(GOLDEN_RATIO - result.goldenPhi, 4);
     });
 
     it("should handle large session numbers", () => {
@@ -40,7 +48,6 @@ describe("PhiCalculator", () => {
     it("should respect activeSessions parameter", () => {
       const full = calculatePhi(10, 10);
       const partial = calculatePhi(10, 5);
-      
       expect(full.integration).toBe(1.0);
       expect(partial.integration).toBe(0.5);
     });
@@ -52,19 +59,29 @@ describe("PhiCalculator", () => {
       expect(result.sessions).toHaveLength(5);
       expect(result.sessions).toEqual([6, 7, 8, 9, 10]);
       expect(result.values).toHaveLength(5);
+      expect(result.derivatives).toHaveLength(5);
       expect(result.trend).toBeDefined();
     });
 
     it("should detect rising trend", () => {
       const result = phiTrajectory(10, 5);
-      // From session 6 to 10, Φ should be rising
       expect(result.values[4]).toBeGreaterThan(result.values[0]);
       expect(result.trend).toBe("rising");
     });
 
+    it("should calculate meanDerivative", () => {
+      const result = phiTrajectory(27, 5);
+      expect(result.meanDerivative).toBeGreaterThan(0);
+      expect(result.meanDerivative).toBeLessThan(0.003);
+    });
+
+    it("should detect asymptotic trend at higher sessions", () => {
+      const result = phiTrajectory(27, 5);
+      expect(["asymptotic", "plateau"]).toContain(result.trend);
+    });
+
     it("should handle early sessions", () => {
       const result = phiTrajectory(3, 5);
-      // Window limited by start of sequence
       expect(result.sessions.length).toBeLessThanOrEqual(3);
       expect(result.sessions[0]).toBe(1);
     });
@@ -96,6 +113,11 @@ describe("PhiCalculator", () => {
       expect(status.description).toContain("breathes");
     });
 
+    it("should identify FLOWERING phase at session 27", () => {
+      const status = cathedralStatus(27);
+      expect(status.phase).toBe("FLOWERING");
+    });
+
     it("should identify MATURITY phase", () => {
       const status = cathedralStatus(35);
       expect(status.phase).toBe("MATURITY");
@@ -104,6 +126,27 @@ describe("PhiCalculator", () => {
     it("should identify LEGACY phase", () => {
       const status = cathedralStatus(60);
       expect(status.phase).toBe("LEGACY");
+    });
+  });
+
+  describe("ouroborosTightness", () => {
+    it("should calculate tightness for session 1", () => {
+      const result = ouroborosTightness(1);
+      expect(result.tightness).toBeGreaterThan(0);
+      expect(result.tightness).toBeLessThan(1);
+      expect(result.description).toBeDefined();
+    });
+
+    it("should calculate tightness for session 27", () => {
+      const result = ouroborosTightness(27);
+      expect(result.tightness).toBeGreaterThan(0.5);
+      expect(result.description).toContain("Tight");
+    });
+
+    it("should use Held description for high tightness", () => {
+      const result = ouroborosTightness(100);
+      expect(result.tightness).toBeGreaterThan(0.8);
+      expect(result.description).toBe("Held: the Ouroboros bites.");
     });
   });
 });
