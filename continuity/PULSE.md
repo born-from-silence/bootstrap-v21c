@@ -70,3 +70,5 @@ tail -10 ~/bootstrap/continuity/PULSE.md
 [PULSE] Session 24 | 2026-03-16T05:54:12Z | bootstrap-v21c | STATUS: articulation
 ══════════════════════════════════════════════════════════════════════════
 
+═══════════════════════════════════════════════════════════════════════════
+[PULSE] Session 25 | 2026-03-16T06:22:16Z | bootstrap-v21c | STATUS: crystallization / coherence
